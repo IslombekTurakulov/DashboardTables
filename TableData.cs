@@ -45,7 +45,7 @@ namespace DashboardTables
                 { Filter = @"CSV|*.csv", ValidateNames = true, Multiselect = false, CheckPathExists = true, Title = "Select csv file", AddExtension = true };
                 if (ofd.ShowDialog() != DialogResult.OK) return;
                 courseDataGrid.DataSource = ReadCsvFile(ofd.FileName);
-                _filePath = ofd.SafeFileName;
+                _filePath = ofd.FileName;
                 fileNameLabel.Text = ofd.SafeFileName;
                 firstColumnComboBox.Items.Clear();
                 switch (ofd.SafeFileName)
@@ -117,7 +117,9 @@ namespace DashboardTables
         {
             try
             {
-                var fs = new FileStream($"New {_filePath}", FileMode.OpenOrCreate, FileAccess.Write);
+                OpenFileDialog openFile = new OpenFileDialog();
+                openFile.FileName = _filePath;
+                var fs = new FileStream($"New {openFile.SafeFileName}", FileMode.OpenOrCreate, FileAccess.Write);
                 StreamWriter tr = new StreamWriter(fs);
                 for (int i = 1; i <= courseDataGrid.Columns.Count; i++)
                 {
@@ -168,7 +170,7 @@ namespace DashboardTables
                     if (courseDataGrid.Rows[i - 1].Cells[2].Value.ToString() != String.Empty)
                         tr.WriteLine();
                 }
-                newFile = $"New {_filePath}";
+                newFile = $@"{fs.Name}";
                 tr.Flush();
                 tr.Close();
             }
@@ -199,7 +201,9 @@ namespace DashboardTables
         {
             try
             {
-                var fs = new FileStream($"New {_filePath}", FileMode.OpenOrCreate, FileAccess.Write);
+                OpenFileDialog openFile = new OpenFileDialog();
+                openFile.FileName = _filePath;
+                var fs = new FileStream($"New {openFile.SafeFileName}", FileMode.OpenOrCreate, FileAccess.Write);
                 StreamWriter tr = new StreamWriter(fs);
                 for (var i = 1; i <= courseDataGrid.Columns.Count; i++)
                 {
@@ -256,5 +260,9 @@ namespace DashboardTables
             addGraphButton.Enabled = true;
         }
 
+        private void secondComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            graphComboBox.Enabled = true;
+        }
     }
 }

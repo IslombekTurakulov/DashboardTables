@@ -189,17 +189,18 @@ namespace DashboardTables
             this.secondComboBox.Name = "secondComboBox";
             this.secondComboBox.Size = new System.Drawing.Size(134, 21);
             this.secondComboBox.TabIndex = 5;
+            this.secondComboBox.SelectedIndexChanged += new System.EventHandler(this.secondComboBox_SelectedIndexChanged);
             // 
             // secondLabel
             // 
             this.secondLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.secondLabel.AutoSize = true;
             this.secondLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.secondLabel.Location = new System.Drawing.Point(292, 41);
+            this.secondLabel.Location = new System.Drawing.Point(312, 41);
             this.secondLabel.Name = "secondLabel";
-            this.secondLabel.Size = new System.Drawing.Size(178, 20);
+            this.secondLabel.Size = new System.Drawing.Size(156, 20);
             this.secondLabel.TabIndex = 4;
-            this.secondLabel.Text = "For graph digits column:";
+            this.secondLabel.Text = "Second digit column:";
             // 
             // graphComboBox
             // 
@@ -243,11 +244,11 @@ namespace DashboardTables
             this.columnChooserLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.columnChooserLabel.AutoSize = true;
             this.columnChooserLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.columnChooserLabel.Location = new System.Drawing.Point(113, 41);
+            this.columnChooserLabel.Location = new System.Drawing.Point(136, 41);
             this.columnChooserLabel.Name = "columnChooserLabel";
-            this.columnChooserLabel.Size = new System.Drawing.Size(162, 60);
+            this.columnChooserLabel.Size = new System.Drawing.Size(132, 20);
             this.columnChooserLabel.TabIndex = 0;
-            this.columnChooserLabel.Text = "For graph title column\r\n\r\n:";
+            this.columnChooserLabel.Text = "First digit column:";
             // 
             // TableData
             // 

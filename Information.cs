@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Data;
+using System.Data.OleDb;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -21,29 +23,24 @@ namespace DashboardTables
             InitializeComponent();
         }
 
+        Func<ChartPoint, string> labelPoint = chartPoint =>
+            string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
 
         private DataTable CsvTable(string filePath)
         {
             try
             {
-                StreamReader sr = new StreamReader(filePath);
-                string[] headers = sr.ReadLine().Split('|'); 
-                DataTable dt = new DataTable();
-                foreach (string header in headers)
-                {
-                    dt.Columns.Add(header);
-                }
-                while (!sr.EndOfStream)
-                {
-                    string[] rows = sr.ReadLine()?.Split('|');
-                    DataRow dr = dt.NewRow();
-                    for (int i = 0; i < headers.Length; i++)
-                    {
-                        dr[i] = rows?[i];
-                    }
-                    dt.Rows.Add(dr);
-                }
-                return dt;
+                var dataTable = new DataTable("Data");
+                using var cn = new OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=\"" +
+                                                   Path.GetDirectoryName(filePath) +
+                                                   "\";Extended Properties='text;HDR=yes;FMT=Delimited(|)';");
+                using var cmd =
+                    new OleDbCommand($"select *from [{new FileInfo(filePath).Name}]", cn);
+                cn.Open();
+                using var adapter = new OleDbDataAdapter(cmd);
+                adapter.Fill(dataTable);
+
+                return dataTable;
             }
             catch (Exception ex)
             {
@@ -78,58 +75,16 @@ namespace DashboardTables
                         {
                             Dock = DockStyle.Fill
                         };
-                        cartesianChart.AxisY.Add(new Axis
+                        for (int i = 0; i < dataGridView.Rows.Count; i++)
                         {
-                            LabelFormatter = val => val.ToString("C")
-                        });
-                        var gradientBrush = new LinearGradientBrush
-                        {
-                            StartPoint = new Point(0, 0),
-                            EndPoint = new Point(0, 1)
-                        };
-
-                        gradientBrush.GradientStops.Add(new GradientStop(System.Windows.Media.Color.FromRgb(33, 148, 241), 0));
-                        gradientBrush.GradientStops.Add(new GradientStop(Colors.Transparent, 1));
-                        if (int.Parse(dataArray[2]) == 1)
-                        {
-                            cartesianChart.Series.Add(new LineSeries
-                            {
-                                Values = OneGetData(dataGridView),
-                                Fill = gradientBrush,
-                                StrokeThickness = 1,
-                                PointGeometry = null
-                            });
- 
-                            cartesianChart.Zoom = ZoomingOptions.X;
-
-                            for (int i = 0; i < dataGridView.Rows.Count; i++)
-                            {
-                                cartesianChart.AxisX.Add(new Axis
-                                {
-                                    LabelFormatter = val => dataGridView.Rows[i].Cells[1].Value.ToString()
-                                });
-                            }
-                        }
-                        else
-                        {
-
-                            cartesianChart.Series.Add(new LineSeries
-                            {
-                                Values = GetData(dataGridView),
-                                Fill = gradientBrush,
-                                StrokeThickness = 1,
-                                PointGeometry = null
-                            });
- 
-                            cartesianChart.Zoom = ZoomingOptions.X;
-
-                            for (int i = 0; i < dataGridView.Rows.Count; i++)
-                            {
-                                cartesianChart.AxisX.Add(new Axis
-                                {
-                                    LabelFormatter = val => dataGridView.Rows[i].Cells[1].Value.ToString()
-                                });
-                            }
+                            cartesianChart.Series.Add( new ColumnSeries()
+                           {
+                               Title = dataGridView.Columns[i].Name,
+                               Values = new ChartValues<double>
+                                   {double.Parse(dataGridView.Rows[i].Cells[1].Value.ToString())},
+                               DataLabels = false,
+                               LabelPoint = labelPoint
+                           });
                         }
                         // Добавляем параметры  в вкладку
                         tabPage.Controls.Add(cartesianChart);
@@ -137,14 +92,7 @@ namespace DashboardTables
                     else
                     {
                         PieChart pieChart = new PieChart();
-                        if (int.Parse(dataArray[2]) == 1)
-                        {
-
-                        }
-                        else
-                        {
-                            
-                        }
+                       
                         // Добавляем параметры  в вкладку
                         tabPage.Controls.Add(pieChart);
                     }
@@ -175,7 +123,7 @@ namespace DashboardTables
         {
             //to clear the current zoom/pan just set the axis limits to double.NaN
             TabPage tabPage = graphTabControl.SelectedTab;
-            
+
             SelectedTab().AxisX[0].MinValue = double.NaN;
             SelectedTab().AxisX[0].MaxValue = double.NaN;
             SelectedTab().AxisY[0].MinValue = double.NaN;
