@@ -227,12 +227,12 @@ namespace DashboardTables
             // 
             this.secondLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.secondLabel.AutoSize = true;
-            this.secondLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.secondLabel.Location = new System.Drawing.Point(349, 37);
+            this.secondLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.secondLabel.Location = new System.Drawing.Point(340, 41);
             this.secondLabel.Name = "secondLabel";
-            this.secondLabel.Size = new System.Drawing.Size(159, 50);
+            this.secondLabel.Size = new System.Drawing.Size(178, 20);
             this.secondLabel.TabIndex = 4;
-            this.secondLabel.Text = "Second Column:\r\n\r\n";
+            this.secondLabel.Text = "For graph digits column:";
             // 
             // graphComboBox
             // 
@@ -276,14 +276,14 @@ namespace DashboardTables
             // 
             this.columnChooserLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.columnChooserLabel.AutoSize = true;
-            this.columnChooserLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.columnChooserLabel.Location = new System.Drawing.Point(181, 37);
+            this.columnChooserLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.columnChooserLabel.Location = new System.Drawing.Point(161, 41);
             this.columnChooserLabel.Name = "columnChooserLabel";
-            this.columnChooserLabel.Size = new System.Drawing.Size(128, 50);
+            this.columnChooserLabel.Size = new System.Drawing.Size(162, 60);
             this.columnChooserLabel.TabIndex = 0;
-            this.columnChooserLabel.Text = "First Column:\r\n\r\n";
+            this.columnChooserLabel.Text = "For graph title column\r\n\r\n:";
             // 
-            // StudentsData
+            // TableData
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -291,7 +291,7 @@ namespace DashboardTables
             this.Controls.Add(this.chooseColumnPanel);
             this.Controls.Add(this.tablePanel);
             this.Controls.Add(this.panel1);
-            this.Name = "StudentsData";
+            this.Name = "TableData";
             this.Text = "StudentsData";
             this.Load += new System.EventHandler(this.StudentsData_Load);
             ((System.ComponentModel.ISupportInitialize)(this.courseDataGrid)).EndInit();
