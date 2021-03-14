@@ -42,24 +42,16 @@ namespace DashboardTables
             try
             {
                 using var ofd = new OpenFileDialog()
-                { Filter = @"CSV|*.csv", ValidateNames = true, Multiselect = false, CheckPathExists = true, Title = "Select csv file", AddExtension = true };
+                { Filter = @"CSV|*.csv", ValidateNames = true, Multiselect = false, CheckPathExists = true, Title = "Select CSV file", AddExtension = true };
                 if (ofd.ShowDialog() != DialogResult.OK) return;
                 courseDataGrid.DataSource = ReadCsvFile(ofd.FileName);
-                _filePath = ofd.FileName;
+                _filePath = ofd.SafeFileName;
                 fileNameLabel.Text = ofd.SafeFileName;
                 firstColumnComboBox.Items.Clear();
                 switch (ofd.SafeFileName)
                 {
                     case "coursea_data.csv":
                         for (int i = 0; i < courseDataGrid.ColumnCount - 1; i++)
-                            firstColumnComboBox.Items.Add(courseDataGrid.Columns[i].Name);
-                        break;
-                    case "Оценки студентов.csv":
-                        for (int i = 0; i < courseDataGrid.ColumnCount; i++)
-                            firstColumnComboBox.Items.Add(courseDataGrid.Columns[i].Name);
-                        break;
-                    case "Рестораны.csv":
-                        for (int i = 0; i < courseDataGrid.ColumnCount; i++)
                             firstColumnComboBox.Items.Add(courseDataGrid.Columns[i].Name);
                         break;
                     default:
@@ -105,7 +97,12 @@ namespace DashboardTables
                     throw new ArgumentException("Выберите столбец!");
 
                 columns += $"{firstColumnComboBox.Text}|{secondComboBox.Text}";
-                File.AppendAllText(_graphFilePath, $@"{newFile}|{graphComboBox.Text}|{columns}" + Environment.NewLine);
+                var fs = new FileStream(_graphFilePath, FileMode.Append, FileAccess.Write);
+                StreamWriter tr = new StreamWriter(fs);
+                tr.WriteLine($@"{newFile}|{graphComboBox.Text}|{columns}");
+
+                tr.Flush();
+                tr.Close();
             }
             catch (Exception ex)
             {
@@ -117,9 +114,7 @@ namespace DashboardTables
         {
             try
             {
-                OpenFileDialog openFile = new OpenFileDialog();
-                openFile.FileName = _filePath;
-                var fs = new FileStream($"New {openFile.SafeFileName}", FileMode.OpenOrCreate, FileAccess.Write);
+                var fs = new FileStream($"New {_filePath}", FileMode.OpenOrCreate, FileAccess.Write);
                 StreamWriter tr = new StreamWriter(fs);
                 for (int i = 1; i <= courseDataGrid.Columns.Count; i++)
                 {
@@ -127,13 +122,9 @@ namespace DashboardTables
                         secondComboBox.Text == courseDataGrid.Columns[i - 1].Name)
                     {
                         if (i == courseDataGrid.Columns.Count)
-                        {
                             tr.WriteAsync(courseDataGrid.Columns[i - 1].Name);
-                        }
                         else
-                        {
                             tr.WriteAsync(courseDataGrid.Columns[i - 1].Name + "|");
-                        }
                     }
                 }
 
@@ -170,7 +161,7 @@ namespace DashboardTables
                     if (courseDataGrid.Rows[i - 1].Cells[2].Value.ToString() != String.Empty)
                         tr.WriteLine();
                 }
-                newFile = $@"{fs.Name}";
+                newFile = $@"New {_filePath}";
                 tr.Flush();
                 tr.Close();
             }
@@ -201,9 +192,7 @@ namespace DashboardTables
         {
             try
             {
-                OpenFileDialog openFile = new OpenFileDialog();
-                openFile.FileName = _filePath;
-                var fs = new FileStream($"New {openFile.SafeFileName}", FileMode.OpenOrCreate, FileAccess.Write);
+                var fs = new FileStream($"New {_filePath}", FileMode.OpenOrCreate, FileAccess.Write);
                 StreamWriter tr = new StreamWriter(fs);
                 for (var i = 1; i <= courseDataGrid.Columns.Count; i++)
                 {

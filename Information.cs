@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.OleDb;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Windows.Media;
 using CsvHelper;
+using CsvHelper.Configuration;
 using LiveCharts;
 using LiveCharts.Wpf;
 using CartesianChart = LiveCharts.WinForms.CartesianChart;
@@ -30,17 +32,22 @@ namespace DashboardTables
         {
             try
             {
-                var dataTable = new DataTable("Data");
-                using var cn = new OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=\"" +
-                                                   Path.GetDirectoryName(filePath) +
-                                                   "\";Extended Properties='text;HDR=yes;FMT=Delimited(|)';");
-                using var cmd =
-                    new OleDbCommand($"select *from [{new FileInfo(filePath).Name}]", cn);
-                cn.Open();
-                using var adapter = new OleDbDataAdapter(cmd);
-                adapter.Fill(dataTable);
+                var dt = new DataTable();
+                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    PrepareHeaderForMatch = args => args.Header.ToLower(),
+                    MissingFieldFound = null,
+                    Delimiter = "|",
+                    TrimOptions = TrimOptions.Trim
+                };
 
-                return dataTable;
+                using var sr = new StreamReader(filePath);
+                using var csv = new CsvReader(sr, config);
+                using var dr = new CsvDataReader(csv);
+
+                dt.Load(dr);
+
+                return dt;
             }
             catch (Exception ex)
             {
@@ -60,26 +67,30 @@ namespace DashboardTables
                 var fs = new FileStream("data.txt", FileMode.Open, FileAccess.Read);
                 var sr = new StreamReader(fs, Encoding.Default);
                 DataGridView dataGridView = new DataGridView();
+                CartesianChart cartesianChart = new CartesianChart
+                {
+                    Dock = DockStyle.Fill
+                };
+                PieChart pieChart = new PieChart
+                {
+                    Dock = DockStyle.Fill
+                };
                 while (sr.Peek() > -1)
                 {
                     string[] dataArray = sr.ReadLine()?.Split('|');
+                    dataGridView.DataSource = CsvTable(dataArray?[0]);
                     TabPage tabPage = new TabPage
                     {
-                        Name = dataArray?[0]
+                        Text = dataArray?[0]
                     };
-                    dataGridView.DataSource = CsvTable(dataArray?[0]);
 
                     if (dataArray[1].Contains("Chart"))
                     {
-                        CartesianChart cartesianChart = new CartesianChart()
-                        {
-                            Dock = DockStyle.Fill
-                        };
                         for (int i = 0; i < dataGridView.Rows.Count; i++)
                         {
                             cartesianChart.Series.Add( new ColumnSeries()
                            {
-                               Title = dataGridView.Columns[i].Name,
+                               Title = dataGridView.Columns[1].Name,
                                Values = new ChartValues<double>
                                    {double.Parse(dataGridView.Rows[i].Cells[1].Value.ToString())},
                                DataLabels = false,
@@ -91,8 +102,7 @@ namespace DashboardTables
                     }
                     else
                     {
-                        PieChart pieChart = new PieChart();
-                       
+
                         // Добавляем параметры  в вкладку
                         tabPage.Controls.Add(pieChart);
                     }
@@ -102,6 +112,8 @@ namespace DashboardTables
                     var graphChart = graphTabControl.TabPages[graphTabControl.SelectedIndex].Controls[0];
                     graphChart.Select();
                 }
+                fs.Flush();
+                fs.Close();
             }
             catch (Exception ex)
             {
