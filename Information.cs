@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
 using System.Globalization;
@@ -11,6 +12,8 @@ using System.Windows.Media;
 using CsvHelper;
 using CsvHelper.Configuration;
 using LiveCharts;
+using LiveCharts.Configurations;
+using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using CartesianChart = LiveCharts.WinForms.CartesianChart;
 using PieChart = LiveCharts.WinForms.PieChart;
@@ -32,21 +35,23 @@ namespace DashboardTables
         {
             try
             {
-                var dt = new DataTable();
-                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                DataTable dt = new DataTable();
+                using StreamReader sr = new StreamReader(filePath);
+                string[] headers = sr.ReadLine()?.Split('|');
+                foreach (string header in headers)
                 {
-                    PrepareHeaderForMatch = args => args.Header.ToLower(),
-                    MissingFieldFound = null,
-                    Delimiter = "|",
-                    TrimOptions = TrimOptions.Trim
-                };
-
-                using var sr = new StreamReader(filePath);
-                using var csv = new CsvReader(sr, config);
-                using var dr = new CsvDataReader(csv);
-
-                dt.Load(dr);
-
+                    dt.Columns.Add(header);
+                }
+                while (!sr.EndOfStream)
+                {
+                    string[] rows = sr.ReadLine()?.Split('|');
+                    DataRow dr = dt.NewRow();
+                    for (int i = 0; i < headers.Length; i++)
+                    {
+                        dr[i] = rows?[i];
+                    }
+                    dt.Rows.Add(dr);
+                }
                 return dt;
             }
             catch (Exception ex)
@@ -66,44 +71,97 @@ namespace DashboardTables
 
                 var fs = new FileStream("data.txt", FileMode.Open, FileAccess.Read);
                 var sr = new StreamReader(fs, Encoding.Default);
-                DataGridView dataGridView = new DataGridView();
-                CartesianChart cartesianChart = new CartesianChart
-                {
-                    Dock = DockStyle.Fill
-                };
-                PieChart pieChart = new PieChart
-                {
-                    Dock = DockStyle.Fill
-                };
+
                 while (sr.Peek() > -1)
                 {
-                    string[] dataArray = sr.ReadLine()?.Split('|');
-                    dataGridView.DataSource = CsvTable(dataArray?[0]);
-                    TabPage tabPage = new TabPage
+                    var AxisX = new List<double>();
+                    var AxisY = new List<double>();
+                    var dataArray = sr.ReadLine()?.Split('|');
+                    DataTable dt = CsvTable(dataArray?[0]);
+                    OpenFileDialog openFileDialog = new OpenFileDialog { FileName = dataArray?[0] };
+                    var tabPage = new TabPage { Text = openFileDialog.SafeFileName };
+                    if (dataArray != null && dataArray[1].Contains("Chart"))
                     {
-                        Text = dataArray?[0]
-                    };
-
-                    if (dataArray[1].Contains("Chart"))
-                    {
-                        for (int i = 0; i < dataGridView.Rows.Count; i++)
+                        var cartesianChart = new CartesianChart { Dock = DockStyle.Fill };
+                        for (int i = 0; i < dt.Rows.Count; i++)
                         {
-                            cartesianChart.Series.Add( new ColumnSeries()
-                           {
-                               Title = dataGridView.Columns[1].Name,
-                               Values = new ChartValues<double>
-                                   {double.Parse(dataGridView.Rows[i].Cells[1].Value.ToString())},
-                               DataLabels = false,
-                               LabelPoint = labelPoint
-                           });
+                            try
+                            {
+                                AxisX.Add(double.Parse(dt.Rows[i].ItemArray[0].ToString()));
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
                         }
-                        // Добавляем параметры  в вкладку
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            try
+                            {
+                                AxisY.Add(double.Parse(dt.Rows[i].ItemArray[1].ToString()));
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
+                        }
+
+                        var observablePoint = new ChartValues<ObservablePoint>();
+                        observablePoint.AddRange(AxisX.Select((t, i) => 
+                            new ObservablePoint(t, AxisY[i])).ToList());
+
+                        cartesianChart.Series = 
+                            new SeriesCollection(Mappers.Xy<ObservablePoint>()
+                            .X(point => Math.Log10(point.X))
+                            .Y(point => point.Y))
+                        {
+                            new LineSeries()
+                            {
+                                Title = $"{dt.Columns[0].ColumnName} -> {dt.Columns[1].ColumnName}",
+                                Values = observablePoint
+                            }
+                        };
+                        // Добавляем параметры  в вкладку.
                         tabPage.Controls.Add(cartesianChart);
                     }
                     else
                     {
-
-                        // Добавляем параметры  в вкладку
+                        var pieChart = new PieChart() { Dock = DockStyle.Fill };
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            try
+                            {
+                                AxisX.Add(double.Parse(dt.Rows[i].ItemArray[0].ToString()));
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
+                        }
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            try
+                            {
+                                AxisY.Add(double.Parse(dt.Rows[i].ItemArray[1].ToString()));
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
+                        }
+                        var observablePoint = new ChartValues<ObservablePoint>();
+                        observablePoint.AddRange(AxisX.Select((t, i) => new ObservablePoint(t, AxisY[i])).ToList());
+                        pieChart.Series = new SeriesCollection(Mappers.Xy<ObservablePoint>()
+                            .X(point => Math.Log10(point.X))
+                            .Y(point => point.Y))
+                        {
+                            new PieSeries()
+                            {
+                                Title = $"{dt.Columns[0].ColumnName} -> {dt.Columns[1].ColumnName}",
+                                Values = observablePoint
+                            }
+                        };
+                        // Добавляем параметры  в вкладку.
                         tabPage.Controls.Add(pieChart);
                     }
                     graphTabControl.SelectedTab = tabPage;
@@ -111,8 +169,8 @@ namespace DashboardTables
 
                     var graphChart = graphTabControl.TabPages[graphTabControl.SelectedIndex].Controls[0];
                     graphChart.Select();
+                    fs.Flush();
                 }
-                fs.Flush();
                 fs.Close();
             }
             catch (Exception ex)

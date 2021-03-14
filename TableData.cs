@@ -161,7 +161,7 @@ namespace DashboardTables
                     if (courseDataGrid.Rows[i - 1].Cells[2].Value.ToString() != String.Empty)
                         tr.WriteLine();
                 }
-                newFile = $@"New {_filePath}";
+                newFile = $@"{fs.Name}";
                 tr.Flush();
                 tr.Close();
             }

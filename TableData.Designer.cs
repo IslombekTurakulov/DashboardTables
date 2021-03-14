@@ -221,10 +221,10 @@ namespace DashboardTables
             // 
             this.graphLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.graphLabel.AutoSize = true;
-            this.graphLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.graphLabel.Location = new System.Drawing.Point(540, 37);
+            this.graphLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.graphLabel.Location = new System.Drawing.Point(558, 41);
             this.graphLabel.Name = "graphLabel";
-            this.graphLabel.Size = new System.Drawing.Size(146, 25);
+            this.graphLabel.Size = new System.Drawing.Size(117, 20);
             this.graphLabel.TabIndex = 2;
             this.graphLabel.Text = "Choose Graph:";
             // 
