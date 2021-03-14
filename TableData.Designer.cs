@@ -37,8 +37,6 @@ namespace DashboardTables
             this.openFile = new System.Windows.Forms.Button();
             this.tablePanel = new System.Windows.Forms.Panel();
             this.chooseColumnPanel = new System.Windows.Forms.Panel();
-            this.countComboBox = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.graphChoosePanel = new System.Windows.Forms.Panel();
             this.addGraphButton = new System.Windows.Forms.Button();
             this.secondComboBox = new System.Windows.Forms.ComboBox();
@@ -143,8 +141,6 @@ namespace DashboardTables
             // chooseColumnPanel
             // 
             this.chooseColumnPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(215)))), ((int)(((byte)(148)))));
-            this.chooseColumnPanel.Controls.Add(this.countComboBox);
-            this.chooseColumnPanel.Controls.Add(this.label1);
             this.chooseColumnPanel.Controls.Add(this.graphChoosePanel);
             this.chooseColumnPanel.Controls.Add(this.secondComboBox);
             this.chooseColumnPanel.Controls.Add(this.secondLabel);
@@ -157,34 +153,6 @@ namespace DashboardTables
             this.chooseColumnPanel.Name = "chooseColumnPanel";
             this.chooseColumnPanel.Size = new System.Drawing.Size(875, 130);
             this.chooseColumnPanel.TabIndex = 3;
-            // 
-            // countComboBox
-            // 
-            this.countComboBox.AccessibleDescription = "Amount of Columns";
-            this.countComboBox.AccessibleName = "Count";
-            this.countComboBox.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.countComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.countComboBox.FormatString = "N0";
-            this.countComboBox.FormattingEnabled = true;
-            this.countComboBox.Items.AddRange(new object[] {
-            "1",
-            "2"});
-            this.countComboBox.Location = new System.Drawing.Point(29, 67);
-            this.countComboBox.Name = "countComboBox";
-            this.countComboBox.Size = new System.Drawing.Size(104, 21);
-            this.countComboBox.TabIndex = 10;
-            this.countComboBox.SelectedIndexChanged += new System.EventHandler(this.countComboBox_SelectedIndexChanged);
-            // 
-            // label1
-            // 
-            this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(37, 37);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(96, 25);
-            this.label1.TabIndex = 9;
-            this.label1.Text = "Columns:";
             // 
             // graphChoosePanel
             // 
@@ -216,9 +184,8 @@ namespace DashboardTables
             this.secondComboBox.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.secondComboBox.BackColor = System.Drawing.SystemColors.Window;
             this.secondComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.secondComboBox.Enabled = false;
             this.secondComboBox.FormattingEnabled = true;
-            this.secondComboBox.Location = new System.Drawing.Point(364, 66);
+            this.secondComboBox.Location = new System.Drawing.Point(316, 66);
             this.secondComboBox.Name = "secondComboBox";
             this.secondComboBox.Size = new System.Drawing.Size(134, 21);
             this.secondComboBox.TabIndex = 5;
@@ -228,7 +195,7 @@ namespace DashboardTables
             this.secondLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.secondLabel.AutoSize = true;
             this.secondLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.secondLabel.Location = new System.Drawing.Point(340, 41);
+            this.secondLabel.Location = new System.Drawing.Point(292, 41);
             this.secondLabel.Name = "secondLabel";
             this.secondLabel.Size = new System.Drawing.Size(178, 20);
             this.secondLabel.TabIndex = 4;
@@ -243,7 +210,7 @@ namespace DashboardTables
             this.graphComboBox.Items.AddRange(new object[] {
             "Chart",
             "Pie Chart"});
-            this.graphComboBox.Location = new System.Drawing.Point(591, 65);
+            this.graphComboBox.Location = new System.Drawing.Point(545, 65);
             this.graphComboBox.Name = "graphComboBox";
             this.graphComboBox.Size = new System.Drawing.Size(141, 21);
             this.graphComboBox.TabIndex = 3;
@@ -254,7 +221,7 @@ namespace DashboardTables
             this.graphLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.graphLabel.AutoSize = true;
             this.graphLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.graphLabel.Location = new System.Drawing.Point(586, 37);
+            this.graphLabel.Location = new System.Drawing.Point(540, 37);
             this.graphLabel.Name = "graphLabel";
             this.graphLabel.Size = new System.Drawing.Size(146, 25);
             this.graphLabel.TabIndex = 2;
@@ -264,9 +231,8 @@ namespace DashboardTables
             // 
             this.firstColumnComboBox.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.firstColumnComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.firstColumnComboBox.Enabled = false;
             this.firstColumnComboBox.FormattingEnabled = true;
-            this.firstColumnComboBox.Location = new System.Drawing.Point(188, 66);
+            this.firstColumnComboBox.Location = new System.Drawing.Point(140, 66);
             this.firstColumnComboBox.Name = "firstColumnComboBox";
             this.firstColumnComboBox.Size = new System.Drawing.Size(121, 21);
             this.firstColumnComboBox.TabIndex = 1;
@@ -277,7 +243,7 @@ namespace DashboardTables
             this.columnChooserLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.columnChooserLabel.AutoSize = true;
             this.columnChooserLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.columnChooserLabel.Location = new System.Drawing.Point(161, 41);
+            this.columnChooserLabel.Location = new System.Drawing.Point(113, 41);
             this.columnChooserLabel.Name = "columnChooserLabel";
             this.columnChooserLabel.Size = new System.Drawing.Size(162, 60);
             this.columnChooserLabel.TabIndex = 0;
@@ -322,8 +288,6 @@ namespace DashboardTables
         private System.Windows.Forms.Panel graphChoosePanel;
         private System.Windows.Forms.Button addGraphButton;
         private System.Windows.Forms.Button clearGraphFile;
-        private System.Windows.Forms.ComboBox countComboBox;
-        private System.Windows.Forms.Label label1;
         private string filePathLabel;
         private System.Windows.Forms.Label fileNameLabel;
     }

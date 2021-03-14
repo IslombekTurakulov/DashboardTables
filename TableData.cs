@@ -99,22 +99,13 @@ namespace DashboardTables
                 if (graphComboBox.Text == string.Empty)
                     throw new ArgumentException("Выберите график!");
 
-                var choose = int.Parse(countComboBox.Text);
-               
+
                 var columns = string.Empty;
-                switch (choose)
-                {
-                    case 1:
-                        columns += $"{choose}|{firstColumnComboBox.Text}";
-                        break;
-                    case 2:
-                        if (secondComboBox.Text == string.Empty)
-                            throw new ArgumentException("Выберите столбец!");
-                        columns += $"{choose}|{firstColumnComboBox.Text}|{secondComboBox.Text}";
-                        break;
-                }
-                File.WriteAllText(_graphFilePath,$"{newFile}|{graphComboBox.Text}|{columns}" + Environment.NewLine);
-              
+                if (secondComboBox.Text == string.Empty)
+                    throw new ArgumentException("Выберите столбец!");
+
+                columns += $"{firstColumnComboBox.Text}|{secondComboBox.Text}";
+                File.AppendAllText(_graphFilePath, $@"{newFile}|{graphComboBox.Text}|{columns}" + Environment.NewLine);
             }
             catch (Exception ex)
             {
@@ -139,10 +130,7 @@ namespace DashboardTables
                         }
                         else
                         {
-                            if (int.Parse(countComboBox.Text) == 1)
-                                tr.WriteAsync(courseDataGrid.Columns[i - 1].Name);
-                            else
-                                tr.WriteAsync(courseDataGrid.Columns[i - 1].Name + "|");
+                            tr.WriteAsync(courseDataGrid.Columns[i - 1].Name + "|");
                         }
                     }
                 }
@@ -161,13 +149,19 @@ namespace DashboardTables
                             }
 
                             if (j == courseDataGrid.Columns.Count)
-                                tr.Write(courseDataGrid.Rows[i - 1].Cells[j - 1].Value);
+                            {
+                                if (!double.TryParse(courseDataGrid.Rows[i - 1].Cells[j - 1].Value.ToString(),
+                                    out double num))
+                                    throw new ArgumentException("Коллона не является числовым значением!");
+                                tr.Write(num);
+                            }
                             else
                             {
-                                if (int.Parse(countComboBox.Text) == 1)
-                                    tr.Write(courseDataGrid.Rows[i - 1].Cells[j - 1].Value);
-                                else
-                                    tr.Write(courseDataGrid.Rows[i - 1].Cells[j - 1].Value + "|");
+                                if (!double.TryParse(courseDataGrid.Rows[i - 1].Cells[j - 1].Value.ToString(),
+                                    out double num))
+                                    throw new ArgumentException("Коллона не является числовым значением!");
+
+                                tr.Write(num + "|");
                             }
                         }
                     }
@@ -184,22 +178,6 @@ namespace DashboardTables
             }
         }
 
-        private void countComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var choose = int.Parse(countComboBox.Text);
-            switch (choose)
-            {
-                case 1:
-                    firstColumnComboBox.Enabled = true;
-                    secondComboBox.Enabled = false;
-                    break;
-                case 2:
-                    firstColumnComboBox.Enabled = true;
-                    secondComboBox.Enabled = true;
-                    break;
-            }
-            graphComboBox.Enabled = true;
-        }
 
         private void clearGraphFile_Click(object sender, EventArgs e)
         {
@@ -234,10 +212,7 @@ namespace DashboardTables
                         }
                         else
                         {
-                            if (int.Parse(countComboBox.Text) == 1)
-                                tr.WriteAsync(courseDataGrid.Columns[i - 1].Name);
-                            else
-                                tr.WriteAsync(courseDataGrid.Columns[i - 1].Name + "|");
+                            tr.WriteAsync(courseDataGrid.Columns[i - 1].Name + "|");
                         }
                     }
                 }
@@ -259,10 +234,7 @@ namespace DashboardTables
                                 tr.Write(courseDataGrid.Rows[i - 1].Cells[j - 1].Value);
                             else
                             {
-                                if (int.Parse(countComboBox.Text) == 1)
-                                    tr.Write(courseDataGrid.Rows[i - 1].Cells[j - 1].Value + Environment.NewLine);
-                                else
-                                    tr.Write(courseDataGrid.Rows[i - 1].Cells[j - 1].Value + "|");
+                                tr.Write(courseDataGrid.Rows[i - 1].Cells[j - 1].Value + "|");
                             }
                         }
                     }

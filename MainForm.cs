@@ -95,7 +95,7 @@ namespace DashboardTables
         /// <param name="e"></param>
         private void exitBarButton_Click(object sender, EventArgs e) => Application.Exit();
 
-        private void graphButton_Click(object sender, EventArgs e) => OpenChildForm(new FileIndexForm(), sender);
+        private void graphButton_Click(object sender, EventArgs e) => OpenChildForm(new Information(), sender);
 
         private void closeChildForm_Click(object sender, EventArgs e)
         {
