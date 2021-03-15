@@ -58,20 +58,32 @@ namespace DashboardTables
             childForm.Show();
         }
 
-        public static bool ContainsAnyCaseInvariant(string haystack, string needle) => haystack.IndexOf(needle, StringComparison.InvariantCultureIgnoreCase) != -1;
-
+        /// <summary>
+        /// Required for moving the app.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void headerPanel_MouseDown(object sender, MouseEventArgs e)
         {
             ReleaseCapture();
             SendMessage(Handle, 0x112, 0xf012, 0);
         }
-
+        /// <summary>
+        /// Required for moving the app.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void logoButton_MouseDown(object sender, MouseEventArgs e)
         {
             ReleaseCapture();
             SendMessage(Handle, 0x112, 0xf012, 0);
         }
 
+        /// <summary>
+        /// Exit button.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void exitButton_Click(object sender, EventArgs e)=> Application.Exit();
 
         /// <summary>
@@ -110,7 +122,7 @@ namespace DashboardTables
                 _activeForm?.Close();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void newWindowInformation_Click(object sender, EventArgs e)
         {
             Information inf = new Information();
             inf.Show();

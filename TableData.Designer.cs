@@ -33,7 +33,6 @@ namespace DashboardTables
             this.panel1 = new System.Windows.Forms.Panel();
             this.fileNameLabel = new System.Windows.Forms.Label();
             this.clearGraphFile = new System.Windows.Forms.Button();
-            this.exportButton = new System.Windows.Forms.Button();
             this.openFile = new System.Windows.Forms.Button();
             this.tablePanel = new System.Windows.Forms.Panel();
             this.chooseColumnPanel = new System.Windows.Forms.Panel();
@@ -73,7 +72,6 @@ namespace DashboardTables
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(215)))), ((int)(((byte)(148)))));
             this.panel1.Controls.Add(this.fileNameLabel);
             this.panel1.Controls.Add(this.clearGraphFile);
-            this.panel1.Controls.Add(this.exportButton);
             this.panel1.Controls.Add(this.openFile);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
@@ -104,18 +102,6 @@ namespace DashboardTables
             this.clearGraphFile.Text = "Clear Graph Data";
             this.clearGraphFile.UseVisualStyleBackColor = true;
             this.clearGraphFile.Click += new System.EventHandler(this.clearGraphFile_Click);
-            // 
-            // exportButton
-            // 
-            this.exportButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.exportButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.exportButton.Location = new System.Drawing.Point(96, 0);
-            this.exportButton.Name = "exportButton";
-            this.exportButton.Size = new System.Drawing.Size(108, 35);
-            this.exportButton.TabIndex = 1;
-            this.exportButton.Text = "Export CSV File";
-            this.exportButton.UseVisualStyleBackColor = true;
-            this.exportButton.Click += new System.EventHandler(this.exportButton_Click);
             // 
             // openFile
             // 
@@ -278,7 +264,6 @@ namespace DashboardTables
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button openFile;
         private System.Windows.Forms.Panel tablePanel;
-        private System.Windows.Forms.Button exportButton;
         private System.Windows.Forms.Panel chooseColumnPanel;
         private System.Windows.Forms.ComboBox graphComboBox;
         private System.Windows.Forms.Label graphLabel;
