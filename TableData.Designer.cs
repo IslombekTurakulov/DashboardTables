@@ -83,10 +83,10 @@ namespace DashboardTables
             // 
             this.fileNameLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.fileNameLabel.AutoSize = true;
-            this.fileNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 13F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.fileNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.fileNameLabel.Location = new System.Drawing.Point(417, 7);
             this.fileNameLabel.Name = "fileNameLabel";
-            this.fileNameLabel.Size = new System.Drawing.Size(91, 22);
+            this.fileNameLabel.Size = new System.Drawing.Size(75, 18);
             this.fileNameLabel.TabIndex = 3;
             this.fileNameLabel.Text = "File Name";
             // 
@@ -156,7 +156,7 @@ namespace DashboardTables
             this.addGraphButton.Enabled = false;
             this.addGraphButton.FlatAppearance.BorderSize = 0;
             this.addGraphButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.addGraphButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.addGraphButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.addGraphButton.Location = new System.Drawing.Point(0, 0);
             this.addGraphButton.Name = "addGraphButton";
             this.addGraphButton.Size = new System.Drawing.Size(122, 130);

@@ -30,7 +30,6 @@ namespace DashboardTables
         private void InitializeComponent()
         {
             this.barPanel = new System.Windows.Forms.Panel();
-            this.saveChartButton = new System.Windows.Forms.Button();
             this.axisYGroup = new System.Windows.Forms.GroupBox();
             this.axisYSa = new System.Windows.Forms.Label();
             this.dispresionAxisYLabel = new System.Windows.Forms.Label();
@@ -42,15 +41,17 @@ namespace DashboardTables
             this.medianLabel = new System.Windows.Forms.Label();
             this.avgAxisXLabel = new System.Windows.Forms.Label();
             this.graphTabControl = new System.Windows.Forms.TabControl();
+            this.topBarSave = new System.Windows.Forms.Panel();
+            this.saveChartButton1 = new System.Windows.Forms.Button();
             this.barPanel.SuspendLayout();
             this.axisYGroup.SuspendLayout();
             this.axisXGroup.SuspendLayout();
+            this.topBarSave.SuspendLayout();
             this.SuspendLayout();
             // 
             // barPanel
             // 
             this.barPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(215)))), ((int)(((byte)(148)))));
-            this.barPanel.Controls.Add(this.saveChartButton);
             this.barPanel.Controls.Add(this.axisYGroup);
             this.barPanel.Controls.Add(this.axisXGroup);
             this.barPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -59,31 +60,17 @@ namespace DashboardTables
             this.barPanel.Size = new System.Drawing.Size(935, 94);
             this.barPanel.TabIndex = 0;
             // 
-            // saveChartButton
-            // 
-            this.saveChartButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(127)))), ((int)(((byte)(103)))));
-            this.saveChartButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.saveChartButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.saveChartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.saveChartButton.Location = new System.Drawing.Point(798, 0);
-            this.saveChartButton.Name = "saveChartButton";
-            this.saveChartButton.Size = new System.Drawing.Size(137, 94);
-            this.saveChartButton.TabIndex = 3;
-            this.saveChartButton.Text = "Save chart";
-            this.saveChartButton.UseVisualStyleBackColor = false;
-            this.saveChartButton.Click += new System.EventHandler(this.saveChartButton_Click);
-            // 
             // axisYGroup
             // 
             this.axisYGroup.Controls.Add(this.axisYSa);
             this.axisYGroup.Controls.Add(this.dispresionAxisYLabel);
             this.axisYGroup.Controls.Add(this.medianAxisYLabel);
             this.axisYGroup.Controls.Add(this.avgAxisYLabel);
-            this.axisYGroup.Dock = System.Windows.Forms.DockStyle.Left;
+            this.axisYGroup.Dock = System.Windows.Forms.DockStyle.Fill;
             this.axisYGroup.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.axisYGroup.Location = new System.Drawing.Point(404, 0);
+            this.axisYGroup.Location = new System.Drawing.Point(467, 0);
             this.axisYGroup.Name = "axisYGroup";
-            this.axisYGroup.Size = new System.Drawing.Size(394, 94);
+            this.axisYGroup.Size = new System.Drawing.Size(468, 94);
             this.axisYGroup.TabIndex = 2;
             this.axisYGroup.TabStop = false;
             this.axisYGroup.Text = "AxisX";
@@ -134,7 +121,7 @@ namespace DashboardTables
             this.axisXGroup.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.axisXGroup.Location = new System.Drawing.Point(0, 0);
             this.axisXGroup.Name = "axisXGroup";
-            this.axisXGroup.Size = new System.Drawing.Size(404, 94);
+            this.axisXGroup.Size = new System.Drawing.Size(467, 94);
             this.axisXGroup.TabIndex = 1;
             this.axisXGroup.TabStop = false;
             this.axisXGroup.Text = "AxisX";
@@ -178,11 +165,34 @@ namespace DashboardTables
             // graphTabControl
             // 
             this.graphTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.graphTabControl.Location = new System.Drawing.Point(0, 0);
+            this.graphTabControl.Location = new System.Drawing.Point(0, 27);
             this.graphTabControl.Name = "graphTabControl";
             this.graphTabControl.SelectedIndex = 0;
-            this.graphTabControl.Size = new System.Drawing.Size(935, 398);
+            this.graphTabControl.Size = new System.Drawing.Size(935, 371);
             this.graphTabControl.TabIndex = 1;
+            // 
+            // topBarSave
+            // 
+            this.topBarSave.Controls.Add(this.saveChartButton1);
+            this.topBarSave.Dock = System.Windows.Forms.DockStyle.Top;
+            this.topBarSave.Location = new System.Drawing.Point(0, 0);
+            this.topBarSave.Name = "topBarSave";
+            this.topBarSave.Size = new System.Drawing.Size(935, 27);
+            this.topBarSave.TabIndex = 2;
+            // 
+            // saveChartButton1
+            // 
+            this.saveChartButton1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(127)))), ((int)(((byte)(103)))));
+            this.saveChartButton1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.saveChartButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.saveChartButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.saveChartButton1.Location = new System.Drawing.Point(821, 0);
+            this.saveChartButton1.Name = "saveChartButton1";
+            this.saveChartButton1.Size = new System.Drawing.Size(114, 27);
+            this.saveChartButton1.TabIndex = 4;
+            this.saveChartButton1.Text = "Save chart";
+            this.saveChartButton1.UseVisualStyleBackColor = false;
+            this.saveChartButton1.Click += new System.EventHandler(this.saveChartBtn_Click);
             // 
             // Information
             // 
@@ -190,6 +200,7 @@ namespace DashboardTables
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(935, 492);
             this.Controls.Add(this.graphTabControl);
+            this.Controls.Add(this.topBarSave);
             this.Controls.Add(this.barPanel);
             this.Name = "Information";
             this.ShowIcon = false;
@@ -200,6 +211,7 @@ namespace DashboardTables
             this.axisYGroup.PerformLayout();
             this.axisXGroup.ResumeLayout(false);
             this.axisXGroup.PerformLayout();
+            this.topBarSave.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -208,7 +220,6 @@ namespace DashboardTables
 
         private System.Windows.Forms.Panel barPanel;
         private System.Windows.Forms.TabControl graphTabControl;
-        private System.Windows.Forms.Button saveChartButton;
         private System.Windows.Forms.GroupBox axisYGroup;
         private System.Windows.Forms.Label dispresionAxisYLabel;
         private System.Windows.Forms.Label medianAxisYLabel;
@@ -219,5 +230,7 @@ namespace DashboardTables
         private System.Windows.Forms.Label medianLabel;
         private System.Windows.Forms.Label avgAxisXLabel;
         private System.Windows.Forms.Label axisYSa;
+        private System.Windows.Forms.Panel topBarSave;
+        private System.Windows.Forms.Button saveChartButton1;
     }
 }

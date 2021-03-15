@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using System.Windows.Media;
 using LiveCharts;
 using LiveCharts.Configurations;
@@ -22,11 +23,17 @@ namespace DashboardTables
 {
     public partial class Information : Form
     {
+        private int counterScreen = 0;
         public Information()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Reading new csv table.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         private DataTable CsvTable(string filePath)
         {
             try
@@ -62,6 +69,11 @@ namespace DashboardTables
 
         }
 
+        /// <summary>
+        /// Checking the Median.
+        /// </summary>
+        /// <param name="xs"></param>
+        /// <returns></returns>
         private double MedianAxisXy(double[] xs)
         {
             var ys = xs.OrderBy(x => x).ToList();
@@ -69,13 +81,29 @@ namespace DashboardTables
             return (ys[(int)(mid)] + ys[(int)(mid + 0.5)]) / 2;
         }
 
+        /// <summary>
+        /// Checking dispression.
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
         private double DispresionAxisXy(List<double> t)
         {
             double m = t.Average();
             return t.Sum(a => Math.Pow(a - m, 2) / t.Count);
         }
+
+        /// <summary>
+        /// Checking the variances.
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
         private double GAverage(List<double> t) => Math.Sqrt(DispresionAxisXy(t));
 
+        /// <summary>
+        /// The big initializing data.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Information_Load(object sender, EventArgs e)
         {
             try
@@ -173,7 +201,8 @@ namespace DashboardTables
                                     StrokeThickness = 1,
                                 }
                             };
-                        Panel panel = barPanel;
+                        Panel panel = new Panel();
+                        panel = barPanel;
                         tabPage.Controls.Add(panel);
                         cartesianChart.DataClick += CartesianChart_DataClick;
                         // Добавляем параметры  в вкладку.
@@ -181,7 +210,7 @@ namespace DashboardTables
                     }
                     else
                     {
-                        var pieChart = new PieChart { Dock = DockStyle.Fill};
+                        var pieChart = new PieChart { Dock = DockStyle.Fill };
 
                         for (int i = 0; i < dt.Rows.Count; i++)
                         {
@@ -204,7 +233,7 @@ namespace DashboardTables
                                 new ColumnSeries()
                                 {
                                     Title = $"{dt.Columns[0].ColumnName}",
-                                    Values = new ChartValues<double>() { double.Parse(dt.Rows[i].ItemArray[0].ToString())},
+                                    Values = new ChartValues<double>() { double.Parse(dt.Rows[i].ItemArray[0].ToString()) },
                                     DataLabels = true,
                                     Width = 5,
                                     Height = 10
@@ -215,9 +244,10 @@ namespace DashboardTables
                         var firstPanel = new Panel()
                         {
                             Dock = DockStyle.Right,
-                            Size = new Size(500,500),
+                            Size = new Size(500, 500),
                         };
-                        var secondPanel = new Panel(){
+                        var secondPanel = new Panel()
+                        {
                             Dock = DockStyle.Left,
                             AutoSize = true,
                             AutoSizeMode = AutoSizeMode.GrowOnly
@@ -265,7 +295,7 @@ namespace DashboardTables
                 MessageBox.Show(e.Message);
             }
         }
-        
+
         private void CartesianChart_DataClick(object sender, ChartPoint chartPoint)
         {
             try
@@ -300,11 +330,6 @@ namespace DashboardTables
                 MessageBox.Show(e.Message);
             }
         }
-        private void saveChartButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void GetInfo(List<double> axisX, List<double> axisY)
         {
             avgAxisXLabel.Text = "Average: " + axisX.Average();
@@ -315,6 +340,36 @@ namespace DashboardTables
             dispresionLabel.Text = "Dispresion: " + DispresionAxisXy(axisX);
             axisXSa.Text = "SA: " + GAverage(axisX);
             axisYSa.Text = "SA: " + (int)Math.Round(GAverage(axisY));
+        }
+
+        private void saveChartBtn_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                var chart = graphTabControl.SelectedTab;
+
+                using (var bmp = new Bitmap(chart.Width, chart.Height))
+                {
+                    SaveFileDialog sfd = new SaveFileDialog()
+                    {
+                        Filter = "JPG File (*.jpg)|*.jpg|PNG File (*.png)|*.png",
+                        AddExtension = true,
+                        Title = "Please save your graph!",
+                        FileName = "myNewScreenGraph"
+                    };
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        chart.DrawToBitmap(bmp, new Rectangle(0, 0, chart.Width, chart.Height));
+                        bmp.Save(sfd.FileName);
+                    }
+                }
+
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
         }
     }
 }

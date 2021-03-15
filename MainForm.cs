@@ -107,21 +107,46 @@ namespace DashboardTables
         /// <param name="e"></param>
         private void exitBarButton_Click(object sender, EventArgs e) => Application.Exit();
 
+        /// <summary>
+        /// Opening the child-form.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void graphButton_Click(object sender, EventArgs e) => OpenChildForm(new Information(), sender);
 
+        /// <summary>
+        /// Closing child form.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void closeChildForm_Click(object sender, EventArgs e)
         {
-            _activeForm?.Close();
+            if (_activeForm != null) 
+                _activeForm?.Close();
         }
-
+        /// <summary>
+        /// Opening the child-form.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tablesButton_Click(object sender, EventArgs e) => OpenChildForm(new FileIndexForm(), sender);
 
+        /// <summary>
+        /// Closing child-form.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dashboardButton_Click(object sender, EventArgs e)
         {
             if (_activeForm != null)
                 _activeForm?.Close();
         }
 
+        /// <summary>
+        /// Opening the same form but through window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void newWindowInformation_Click(object sender, EventArgs e)
         {
             Information inf = new Information();
