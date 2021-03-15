@@ -210,7 +210,7 @@ namespace DashboardTables
             this.graphComboBox.FormattingEnabled = true;
             this.graphComboBox.Items.AddRange(new object[] {
             "Chart",
-            "Pie Chart"});
+            "Column Chart"});
             this.graphComboBox.Location = new System.Drawing.Point(545, 65);
             this.graphComboBox.Name = "graphComboBox";
             this.graphComboBox.Size = new System.Drawing.Size(141, 21);

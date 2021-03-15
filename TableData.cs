@@ -10,7 +10,7 @@ namespace DashboardTables
     {
         private string _filePath;
         private string _graphFilePath = "data.txt";
-        private string newFile;
+        private string _newFile;
         public TableData()
         {
             InitializeComponent();
@@ -83,23 +83,15 @@ namespace DashboardTables
         {
             try
             {
-                if (_filePath == null)
-                    throw new ArgumentException("Выберите таблицу!");
-
-                SaveGraphTable();
-
                 if (graphComboBox.Text == string.Empty)
                     throw new ArgumentException("Выберите график!");
-
-
-                var columns = string.Empty;
+                SaveGraphTable();
                 if (secondComboBox.Text == string.Empty)
                     throw new ArgumentException("Выберите столбец!");
 
-                columns += $"{firstColumnComboBox.Text}|{secondComboBox.Text}";
                 var fs = new FileStream(_graphFilePath, FileMode.Append, FileAccess.Write);
                 StreamWriter tr = new StreamWriter(fs);
-                tr.WriteLine($@"{newFile}|{graphComboBox.Text}|{columns}");
+                tr.WriteLine($@"{_newFile}|{graphComboBox.Text}");
 
                 tr.Flush();
                 tr.Close();
@@ -114,6 +106,8 @@ namespace DashboardTables
         {
             try
             {
+                if (_filePath == String.Empty)
+                    throw new ArgumentException("Выберите таблицу!");
                 var fs = new FileStream($"New {_filePath}", FileMode.OpenOrCreate, FileAccess.Write);
                 StreamWriter tr = new StreamWriter(fs);
                 for (int i = 1; i <= courseDataGrid.Columns.Count; i++)
@@ -136,7 +130,8 @@ namespace DashboardTables
                         if (firstColumnComboBox.Text == courseDataGrid.Columns[j - 1].Name ||
                             secondComboBox.Text == courseDataGrid.Columns[j - 1].Name)
                         {
-                            if (courseDataGrid.Rows[i - 1].Cells[2].Value.ToString() == String.Empty)
+                            if (courseDataGrid.Rows[i - 1].Cells[2].Value.ToString() == String.Empty ||
+                                courseDataGrid.Rows[i - 1].Cells[courseDataGrid.Columns.Count-1].Value.ToString() == String.Empty)
                             {
                                 break;
                             }
@@ -161,7 +156,10 @@ namespace DashboardTables
                     if (courseDataGrid.Rows[i - 1].Cells[2].Value.ToString() != String.Empty)
                         tr.WriteLine();
                 }
-                newFile = $@"{fs.Name}";
+
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.FileName = fs.Name;
+                _newFile = $@"{openFileDialog.FileName}";
                 tr.Flush();
                 tr.Close();
             }
@@ -244,14 +242,8 @@ namespace DashboardTables
             }
         }
 
-        private void graphComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            addGraphButton.Enabled = true;
-        }
+        private void graphComboBox_SelectedIndexChanged(object sender, EventArgs e) => addGraphButton.Enabled = true;
 
-        private void secondComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            graphComboBox.Enabled = true;
-        }
+        private void secondComboBox_SelectedIndexChanged(object sender, EventArgs e) => graphComboBox.Enabled = true;
     }
 }

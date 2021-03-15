@@ -28,9 +28,6 @@ namespace DashboardTables
             InitializeComponent();
         }
 
-        Func<ChartPoint, string> labelPoint = chartPoint =>
-            string.Format("{0} ({1:P})", chartPoint.Y, chartPoint.Participation);
-
         private DataTable CsvTable(string filePath)
         {
             try
@@ -51,7 +48,10 @@ namespace DashboardTables
                         dr[i] = rows?[i];
                     }
                     dt.Rows.Add(dr);
+                    if (dt.Rows.Count > 50)
+                        break;
                 }
+
                 return dt;
             }
             catch (Exception ex)
@@ -62,6 +62,7 @@ namespace DashboardTables
             return null;
 
         }
+
         private void Information_Load(object sender, EventArgs e)
         {
             try
@@ -70,35 +71,55 @@ namespace DashboardTables
                     throw new ArgumentException("Add graph!");
 
                 var fs = new FileStream("data.txt", FileMode.Open, FileAccess.Read);
-                var sr = new StreamReader(fs, Encoding.Default);
+                var sr = new StreamReader(fs, Encoding.UTF8);
 
                 while (sr.Peek() > -1)
                 {
-                    var AxisX = new List<double>();
-                    var AxisY = new List<double>();
+                    var axisX = new List<double>();
+                    var axisY = new List<double>();
                     var dataArray = sr.ReadLine()?.Split('|');
+                    if (dataArray[0] == String.Empty)
+                        continue;
                     DataTable dt = CsvTable(dataArray?[0]);
                     OpenFileDialog openFileDialog = new OpenFileDialog { FileName = dataArray?[0] };
                     var tabPage = new TabPage { Text = openFileDialog.SafeFileName };
-                    if (dataArray != null && dataArray[1].Contains("Chart"))
+                    if (dataArray[1] == "Chart")
                     {
-                        var cartesianChart = new CartesianChart { Dock = DockStyle.Fill };
+                        var cartesianChart = new CartesianChart
+                        {
+                            Dock = DockStyle.Fill,
+                            Zoom = ZoomingOptions.X,
+                            LegendLocation = LegendLocation.Right
+                        };
+                        var gradientBrush = new LinearGradientBrush
+                        {
+                            StartPoint = new Point(0, 0),
+                            EndPoint = new Point(0, 1)
+                        };
+                        gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(33, 148, 241), 0));
+                        gradientBrush.GradientStops.Add(new GradientStop(Colors.Transparent, 1));
+
                         for (int i = 0; i < dt.Rows.Count; i++)
                         {
                             try
                             {
-                                AxisX.Add(double.Parse(dt.Rows[i].ItemArray[0].ToString()));
+                                if (double.TryParse(dt.Rows[i].ItemArray[0].ToString(),
+                                    NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
+                                    axisX.Add(num);
                             }
                             catch (Exception)
                             {
                                 // ignored
                             }
                         }
+
                         for (int i = 0; i < dt.Rows.Count; i++)
                         {
                             try
                             {
-                                AxisY.Add(double.Parse(dt.Rows[i].ItemArray[1].ToString()));
+                                if (double.TryParse(dt.Rows[i].ItemArray[1].ToString(),
+                                    NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
+                                    axisY.Add(num);
                             }
                             catch (Exception)
                             {
@@ -107,70 +128,102 @@ namespace DashboardTables
                         }
 
                         var observablePoint = new ChartValues<ObservablePoint>();
-                        observablePoint.AddRange(AxisX.Select((t, i) => 
-                            new ObservablePoint(t, AxisY[i])).ToList());
+                        observablePoint.AddRange(axisX.Select((t, i) =>
+                            new ObservablePoint(t, axisY[i])).ToList());
 
-                        cartesianChart.Series = 
+                        cartesianChart.Series =
                             new SeriesCollection(Mappers.Xy<ObservablePoint>()
-                            .X(point => Math.Log10(point.X))
-                            .Y(point => point.Y))
-                        {
-                            new LineSeries()
+                                .X(point => Math.Log10(point.X))
+                                .Y(point => point.Y))
                             {
-                                Title = $"{dt.Columns[0].ColumnName} -> {dt.Columns[1].ColumnName}",
-                                Values = observablePoint
-                            }
-                        };
+                                new LineSeries()
+                                {
+                                    Title = $"{dt.Columns[0].ColumnName} => {dt.Columns[1].ColumnName}",
+                                    Values = observablePoint,
+                                    DataLabels = true,
+                                    Fill = gradientBrush,
+                                    StrokeThickness = 1,
+                                }
+                            };
                         // Добавляем параметры  в вкладку.
                         tabPage.Controls.Add(cartesianChart);
                     }
                     else
                     {
-                        var pieChart = new PieChart() { Dock = DockStyle.Fill };
-                        for (int i = 0; i < dt.Rows.Count; i++)
+                       var cartesianChart = new CartesianChart
                         {
-                            try
-                            {
-                                AxisX.Add(double.Parse(dt.Rows[i].ItemArray[0].ToString()));
-                            }
-                            catch (Exception)
-                            {
-                                // ignored
-                            }
-                        }
-                        for (int i = 0; i < dt.Rows.Count; i++)
-                        {
-                            try
-                            {
-                                AxisY.Add(double.Parse(dt.Rows[i].ItemArray[1].ToString()));
-                            }
-                            catch (Exception)
-                            {
-                                // ignored
-                            }
-                        }
-                        var observablePoint = new ChartValues<ObservablePoint>();
-                        observablePoint.AddRange(AxisX.Select((t, i) => new ObservablePoint(t, AxisY[i])).ToList());
-                        pieChart.Series = new SeriesCollection(Mappers.Xy<ObservablePoint>()
-                            .X(point => Math.Log10(point.X))
-                            .Y(point => point.Y))
-                        {
-                            new PieSeries()
-                            {
-                                Title = $"{dt.Columns[0].ColumnName} -> {dt.Columns[1].ColumnName}",
-                                Values = observablePoint
-                            }
+                            Dock = DockStyle.Fill,
+                            Zoom = ZoomingOptions.Xy,
                         };
+                        var gradientBrush = new LinearGradientBrush
+                        {
+                            StartPoint = new Point(0, 0),
+                            EndPoint = new Point(0, 1)
+                        };
+                        gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(33, 148, 241), 0));
+                        gradientBrush.GradientStops.Add(new GradientStop(Colors.Transparent, 1));
+
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            try
+                            {
+                                if (double.TryParse(dt.Rows[i].ItemArray[0].ToString(),
+                                    NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
+                                    axisX.Add(num);
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
+                        }
+
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            try
+                            {
+                                if (double.TryParse(dt.Rows[i].ItemArray[1].ToString(),
+                                    NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
+                                    axisY.Add(num);
+                            }
+                            catch (Exception)
+                            {
+                                // ignored
+                            }
+                        }
+
+                        if (axisX.Count == 0 || axisY.Count == 0 || axisX.Count != axisY.Count)
+                            throw new ArgumentException("Not enough data to build the graph!");
+                        axisX.Sort();
+                        axisY.Sort();
+                        var observablePoint = new ChartValues<ObservablePoint>();
+                        observablePoint.AddRange(axisX.Select((t, i) =>
+                            new ObservablePoint(t, axisY[i])).ToList());
+
+                        cartesianChart.Series =
+                            new SeriesCollection(Mappers.Xy<ObservablePoint>()
+                                .X(point => Math.Log10(point.X))
+                                .Y(point => point.Y))
+                            {
+                                new ColumnSeries()
+                                {
+                                    Title = $"{dt.Columns[0].ColumnName} -> {dt.Columns[1].ColumnName}",
+                                    Values = observablePoint,
+                                    DataLabels = true,
+                                    Fill = gradientBrush,
+                                    StrokeThickness = 1,
+                                }
+                            };
                         // Добавляем параметры  в вкладку.
-                        tabPage.Controls.Add(pieChart);
+                        tabPage.Controls.Add(cartesianChart);
                     }
+
                     graphTabControl.SelectedTab = tabPage;
                     graphTabControl.TabPages.Add(tabPage);
 
                     var graphChart = graphTabControl.TabPages[graphTabControl.SelectedIndex].Controls[0];
                     graphChart.Select();
-                    fs.Flush();
                 }
+                fs.Flush();
                 fs.Close();
             }
             catch (Exception ex)

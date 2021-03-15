@@ -20,7 +20,7 @@ namespace DashboardTables
             MaximizedBounds = Screen.FromHandle(Handle).WorkingArea;
         }
 
-        List<Courses> listOfCourses = new List<Courses>();
+        List<Courses> _listOfCourses = new List<Courses>();
         /// <summary>
         /// Connecting lib <see href="https://rjcodeadvance.com/iu-moderno-temas-multicolor-aleatorio-resaltar-boton-form-activo-winform-c/">Copy from</see>.
         /// </summary>
