@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.OleDb;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Windows.Media;
-using CsvHelper;
-using CsvHelper.Configuration;
 using LiveCharts;
 using LiveCharts.Configurations;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using CartesianChart = LiveCharts.WinForms.CartesianChart;
+using Color = System.Windows.Media.Color;
 using PieChart = LiveCharts.WinForms.PieChart;
 using Point = System.Windows.Point;
+using SeriesCollection = LiveCharts.SeriesCollection;
 
 namespace DashboardTables
 {
@@ -48,7 +47,7 @@ namespace DashboardTables
                         dr[i] = rows?[i];
                     }
                     dt.Rows.Add(dr);
-                    if (dt.Rows.Count > 50)
+                    if (dt.Rows.Count > 40)
                         break;
                 }
 
@@ -63,6 +62,20 @@ namespace DashboardTables
 
         }
 
+        private double MedianAxisXy(double[] xs)
+        {
+            var ys = xs.OrderBy(x => x).ToList();
+            double mid = (ys.Count - 1) / 2.0;
+            return (ys[(int)(mid)] + ys[(int)(mid + 0.5)]) / 2;
+        }
+
+        private double DispresionAxisXy(List<double> t)
+        {
+            double m = t.Average();
+            return t.Sum(a => Math.Pow(a - m, 2) / t.Count);
+        }
+        private double GAverage(List<double> t) => Math.Sqrt(DispresionAxisXy(t));
+
         private void Information_Load(object sender, EventArgs e)
         {
             try
@@ -75,14 +88,25 @@ namespace DashboardTables
 
                 while (sr.Peek() > -1)
                 {
+                    if (graphTabControl.TabPages.Count >= 10)
+                    {
+                        MessageBox.Show("Max tabs is 10!");
+                        break;
+                    }
+
                     var axisX = new List<double>();
                     var axisY = new List<double>();
+
                     var dataArray = sr.ReadLine()?.Split('|');
                     if (dataArray[0] == String.Empty)
                         continue;
                     DataTable dt = CsvTable(dataArray?[0]);
                     OpenFileDialog openFileDialog = new OpenFileDialog { FileName = dataArray?[0] };
-                    var tabPage = new TabPage { Text = openFileDialog.SafeFileName };
+                    var tabPage = new TabPage
+                    {
+                        Text = openFileDialog.SafeFileName,
+                        AccessibleDescription = dataArray[1]
+                    };
                     if (dataArray[1] == "Chart")
                     {
                         var cartesianChart = new CartesianChart
@@ -126,11 +150,15 @@ namespace DashboardTables
                                 // ignored
                             }
                         }
+                        axisX.Sort();
+                        axisY.Sort();
 
                         var observablePoint = new ChartValues<ObservablePoint>();
                         observablePoint.AddRange(axisX.Select((t, i) =>
                             new ObservablePoint(t, axisY[i])).ToList());
 
+
+                        GetInfo(axisX, axisY);
                         cartesianChart.Series =
                             new SeriesCollection(Mappers.Xy<ObservablePoint>()
                                 .X(point => Math.Log10(point.X))
@@ -145,78 +173,65 @@ namespace DashboardTables
                                     StrokeThickness = 1,
                                 }
                             };
+                        Panel panel = barPanel;
+                        tabPage.Controls.Add(panel);
+                        cartesianChart.DataClick += CartesianChart_DataClick;
                         // Добавляем параметры  в вкладку.
                         tabPage.Controls.Add(cartesianChart);
                     }
                     else
                     {
-                       var cartesianChart = new CartesianChart
-                        {
-                            Dock = DockStyle.Fill,
-                            Zoom = ZoomingOptions.Xy,
-                        };
-                        var gradientBrush = new LinearGradientBrush
-                        {
-                            StartPoint = new Point(0, 0),
-                            EndPoint = new Point(0, 1)
-                        };
-                        gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(33, 148, 241), 0));
-                        gradientBrush.GradientStops.Add(new GradientStop(Colors.Transparent, 1));
+                        var pieChart = new PieChart { Dock = DockStyle.Fill};
 
                         for (int i = 0; i < dt.Rows.Count; i++)
                         {
-                            try
-                            {
-                                if (double.TryParse(dt.Rows[i].ItemArray[0].ToString(),
-                                    NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
-                                    axisX.Add(num);
-                            }
-                            catch (Exception)
-                            {
-                                // ignored
-                            }
+                            pieChart.Series.Add(
+                                new PieSeries()
+                                {
+                                    Title = $"{dt.Columns[1].ColumnName}",
+                                    Values = new ChartValues<double>() { double.Parse(dt.Rows[i].ItemArray[1].ToString()) },
+                                    DataLabels = true,
+                                }
+                                );
                         }
+                        var secondColumn = new CartesianChart() { Dock = DockStyle.Right, };
 
                         for (int i = 0; i < dt.Rows.Count; i++)
                         {
-                            try
-                            {
-                                if (double.TryParse(dt.Rows[i].ItemArray[1].ToString(),
-                                    NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
-                                    axisY.Add(num);
-                            }
-                            catch (Exception)
-                            {
-                                // ignored
-                            }
-                        }
-
-                        if (axisX.Count == 0 || axisY.Count == 0 || axisX.Count != axisY.Count)
-                            throw new ArgumentException("Not enough data to build the graph!");
-                        axisX.Sort();
-                        axisY.Sort();
-                        var observablePoint = new ChartValues<ObservablePoint>();
-                        observablePoint.AddRange(axisX.Select((t, i) =>
-                            new ObservablePoint(t, axisY[i])).ToList());
-
-                        cartesianChart.Series =
-                            new SeriesCollection(Mappers.Xy<ObservablePoint>()
-                                .X(point => Math.Log10(point.X))
-                                .Y(point => point.Y))
-                            {
+                            if (i == 30)
+                                break;
+                            secondColumn.Series.Add(
                                 new ColumnSeries()
                                 {
-                                    Title = $"{dt.Columns[0].ColumnName} -> {dt.Columns[1].ColumnName}",
-                                    Values = observablePoint,
+                                    Title = $"{dt.Columns[0].ColumnName}",
+                                    Values = new ChartValues<double>() { double.Parse(dt.Rows[i].ItemArray[0].ToString())},
                                     DataLabels = true,
-                                    Fill = gradientBrush,
-                                    StrokeThickness = 1,
+                                    Width = 5,
+                                    Height = 10
                                 }
-                            };
-                        // Добавляем параметры  в вкладку.
-                        tabPage.Controls.Add(cartesianChart);
-                    }
+                            );
+                        }
 
+                        var firstPanel = new Panel()
+                        {
+                            Dock = DockStyle.Right,
+                            Size = new Size(500,500),
+                        };
+                        var secondPanel = new Panel(){
+                            Dock = DockStyle.Left,
+                            AutoSize = true,
+                            AutoSizeMode = AutoSizeMode.GrowOnly
+                        };
+
+                        firstPanel.Controls.Add(pieChart);
+                        secondPanel.Controls.Add(secondColumn);
+                        pieChart.DataClick += PieChart_DataClick;
+                        secondColumn.DataClick += ColumnChart_DataClick;
+
+                        // Добавляем параметры в вкладку.
+                        tabPage.Controls.Add(firstPanel);
+                        tabPage.Controls.Add(secondPanel);
+                    }
                     graphTabControl.SelectedTab = tabPage;
                     graphTabControl.TabPages.Add(tabPage);
 
@@ -232,25 +247,74 @@ namespace DashboardTables
             }
         }
 
-        private CartesianChart SelectedTab()
+
+        private void PieChart_DataClick(object sender, ChartPoint chartPoint)
         {
-            CartesianChart cartesian = null;
-            TabPage tabpage = graphTabControl.SelectedTab;
-            foreach (var c in tabpage.Controls)
-                if (c is CartesianChart box)
-                    cartesian = box;
-            return cartesian;
+            try
+            {
+                using var colorDialog = new ColorDialog();
+                if (colorDialog.ShowDialog() == DialogResult.OK)
+                {
+                    ((PieSeries)chartPoint.SeriesView).Fill =
+                        new SolidColorBrush(Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R,
+                            colorDialog.Color.G, colorDialog.Color.B));
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+        
+        private void CartesianChart_DataClick(object sender, ChartPoint chartPoint)
+        {
+            try
+            {
+                using var colorDialog = new ColorDialog();
+                if (colorDialog.ShowDialog() == DialogResult.OK)
+                {
+                    ((LineSeries)chartPoint.SeriesView).Fill =
+                        new SolidColorBrush(Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R,
+                            colorDialog.Color.G, colorDialog.Color.B));
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+        private void ColumnChart_DataClick(object sender, ChartPoint chartPoint)
+        {
+            try
+            {
+                using var colorDialog = new ColorDialog();
+                if (colorDialog.ShowDialog() == DialogResult.OK)
+                {
+                    ((ColumnSeries)chartPoint.SeriesView).Fill =
+                        new SolidColorBrush(Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R,
+                            colorDialog.Color.G, colorDialog.Color.B));
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+        private void saveChartButton_Click(object sender, EventArgs e)
+        {
+
         }
 
-        private void ClearZoom()
+        private void GetInfo(List<double> axisX, List<double> axisY)
         {
-            //to clear the current zoom/pan just set the axis limits to double.NaN
-            TabPage tabPage = graphTabControl.SelectedTab;
-
-            SelectedTab().AxisX[0].MinValue = double.NaN;
-            SelectedTab().AxisX[0].MaxValue = double.NaN;
-            SelectedTab().AxisY[0].MinValue = double.NaN;
-            SelectedTab().AxisY[0].MaxValue = double.NaN;
+            avgAxisXLabel.Text = "Average: " + axisX.Average();
+            avgAxisYLabel.Text = "Average: " + (int)Math.Round(axisY.Average());
+            medianAxisYLabel.Text = "MedianAxisXY: " + (int)Math.Round(MedianAxisXy(axisY.ToArray()));
+            medianLabel.Text = "MedianAxisXY: " + MedianAxisXy(axisX.ToArray());
+            dispresionAxisYLabel.Text = "Dispresion: " + (int)Math.Round(DispresionAxisXy(axisY));
+            dispresionLabel.Text = "Dispresion: " + DispresionAxisXy(axisX);
+            axisXSa.Text = "SA: " + GAverage(axisX);
+            axisYSa.Text = "SA: " + (int)Math.Round(GAverage(axisY));
         }
     }
 }

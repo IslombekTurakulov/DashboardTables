@@ -46,6 +46,7 @@ namespace DashboardTables
             this.closeChildForm = new System.Windows.Forms.Button();
             this.panelDesktop = new System.Windows.Forms.Panel();
             this.logoImage = new System.Windows.Forms.PictureBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.sidebarPanel.SuspendLayout();
             this.logoPanel.SuspendLayout();
             this.headerPanel.SuspendLayout();
@@ -57,6 +58,7 @@ namespace DashboardTables
             // sidebarPanel
             // 
             this.sidebarPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(139)))), ((int)(((byte)(235)))));
+            this.sidebarPanel.Controls.Add(this.button1);
             this.sidebarPanel.Controls.Add(this.exitButton);
             this.sidebarPanel.Controls.Add(this.button4);
             this.sidebarPanel.Controls.Add(this.button3);
@@ -276,6 +278,24 @@ namespace DashboardTables
             this.logoImage.TabIndex = 0;
             this.logoImage.TabStop = false;
             // 
+            // button1
+            // 
+            this.button1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.button1.FlatAppearance.BorderSize = 0;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.button1.ForeColor = System.Drawing.Color.Black;
+            this.button1.Image = global::DashboardTables.Properties.Resources.documentedit;
+            this.button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.button1.Location = new System.Drawing.Point(0, 204);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(151, 52);
+            this.button1.TabIndex = 6;
+            this.button1.Text = "Open in Window Graph";
+            this.button1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -315,6 +335,7 @@ namespace DashboardTables
         private System.Windows.Forms.Panel panelDesktop;
         private System.Windows.Forms.Button logoButton;
         private System.Windows.Forms.PictureBox logoImage;
+        private System.Windows.Forms.Button button1;
     }
 }
 

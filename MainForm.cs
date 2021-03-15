@@ -109,6 +109,12 @@ namespace DashboardTables
             if (_activeForm != null)
                 _activeForm?.Close();
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Information inf = new Information();
+            inf.Show();
+        }
     }
 }
 
