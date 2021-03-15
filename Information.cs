@@ -40,15 +40,19 @@ namespace DashboardTables
             {
                 DataTable dt = new DataTable();
                 using StreamReader sr = new StreamReader(filePath);
+                // Reading the first Column
                 string[] headers = sr.ReadLine()?.Split('|');
+                // Through foreach loop adding it to datatable.
                 foreach (string header in headers)
                 {
                     dt.Columns.Add(header);
                 }
                 while (!sr.EndOfStream)
                 {
+                    // Reading the rows.
                     string[] rows = sr.ReadLine()?.Split('|');
                     DataRow dr = dt.NewRow();
+                    //
                     for (int i = 0; i < headers.Length; i++)
                     {
                         dr[i] = rows?[i];
@@ -108,6 +112,7 @@ namespace DashboardTables
         {
             try
             {
+                // Checking the existance of file.
                 if (!File.Exists("data.txt"))
                     throw new ArgumentException("Add graph!");
 
@@ -116,33 +121,68 @@ namespace DashboardTables
 
                 while (sr.Peek() > -1)
                 {
+                    // We set the limit of tabpages to reduce the memory capacity.
                     if (graphTabControl.TabPages.Count >= 10)
                     {
                         MessageBox.Show("Max tabs is 10!");
                         break;
                     }
-
+                    // Creating two list for X and Y coords.
                     var axisX = new List<double>();
                     var axisY = new List<double>();
-
+                    // Taking the info from file "data.txt".
                     var dataArray = sr.ReadLine()?.Split('|');
+                    // If the first index is Empty, check the next.
                     if (dataArray[0] == String.Empty)
                         continue;
+                    // Initializing the new datatable
                     DataTable dt = CsvTable(dataArray?[0]);
                     OpenFileDialog openFileDialog = new OpenFileDialog { FileName = dataArray?[0] };
+                    // Creating the new tabpage.
                     var tabPage = new TabPage
                     {
                         Text = openFileDialog.SafeFileName,
                         AccessibleDescription = dataArray[1]
                     };
+                    // Parsing the digits.
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        try
+                        {
+                            if (double.TryParse(dt.Rows[i].ItemArray[0].ToString(),
+                                NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
+                                axisX.Add(num);
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
+                    }
+
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        try
+                        {
+                            if (double.TryParse(dt.Rows[i].ItemArray[1].ToString(),
+                                NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
+                                axisY.Add(num);
+                        }
+                        catch (Exception)
+                        {
+                            // ignored
+                        }
+                    }
+                    // Check, if data is Chart.
                     if (dataArray[1] == "Chart")
                     {
+                        // Creating new object CartesianChart.
                         var cartesianChart = new CartesianChart
                         {
                             Dock = DockStyle.Fill,
                             Zoom = ZoomingOptions.X,
                             LegendLocation = LegendLocation.Right
                         };
+                        // For color.
                         var gradientBrush = new LinearGradientBrush
                         {
                             StartPoint = new Point(0, 0),
@@ -151,42 +191,16 @@ namespace DashboardTables
                         gradientBrush.GradientStops.Add(new GradientStop(Color.FromRgb(33, 148, 241), 0));
                         gradientBrush.GradientStops.Add(new GradientStop(Colors.Transparent, 1));
 
-                        for (int i = 0; i < dt.Rows.Count; i++)
-                        {
-                            try
-                            {
-                                if (double.TryParse(dt.Rows[i].ItemArray[0].ToString(),
-                                    NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
-                                    axisX.Add(num);
-                            }
-                            catch (Exception)
-                            {
-                                // ignored
-                            }
-                        }
-
-                        for (int i = 0; i < dt.Rows.Count; i++)
-                        {
-                            try
-                            {
-                                if (double.TryParse(dt.Rows[i].ItemArray[1].ToString(),
-                                    NumberStyles.Any, CultureInfo.InvariantCulture, out double num))
-                                    axisY.Add(num);
-                            }
-                            catch (Exception)
-                            {
-                                // ignored
-                            }
-                        }
+                        // Sorting lists.
                         axisX.Sort();
                         axisY.Sort();
-
+                        // Choosing points.
                         var observablePoint = new ChartValues<ObservablePoint>();
                         observablePoint.AddRange(axisX.Select((t, i) =>
                             new ObservablePoint(t, axisY[i])).ToList());
-
-
+                        // It needs to calculate the avg, median,sa and dispress
                         GetInfo(axisX, axisY);
+                        // Adding new Series.
                         cartesianChart.Series =
                             new SeriesCollection(Mappers.Xy<ObservablePoint>()
                                 .X(point => Math.Log10(point.X))
@@ -201,8 +215,10 @@ namespace DashboardTables
                                     StrokeThickness = 1,
                                 }
                             };
+                        // Creating new panel.
                         Panel panel = new Panel();
                         panel = barPanel;
+                        // Adding to control.
                         tabPage.Controls.Add(panel);
                         cartesianChart.DataClick += CartesianChart_DataClick;
                         // Добавляем параметры  в вкладку.
@@ -210,21 +226,29 @@ namespace DashboardTables
                     }
                     else
                     {
-                        var pieChart = new PieChart { Dock = DockStyle.Fill };
-
+                        // Creating new object PieChart.
+                        var pieChart = new PieChart
+                        {
+                            Dock = DockStyle.Fill
+                        };
+                        // Sorting the lists.
+                        axisX.Sort();
+                        // Adding chart.
                         for (int i = 0; i < dt.Rows.Count; i++)
                         {
                             pieChart.Series.Add(
                                 new PieSeries()
                                 {
                                     Title = $"{dt.Columns[1].ColumnName}",
-                                    Values = new ChartValues<double>() { double.Parse(dt.Rows[i].ItemArray[1].ToString()) },
+                                    Values = new ChartValues<double>() { axisX[i] },
                                     DataLabels = true,
                                 }
                                 );
                         }
+                        // Adding second Chart
                         var secondColumn = new CartesianChart() { Dock = DockStyle.Right, };
 
+                        // Initializing it.
                         for (int i = 0; i < dt.Rows.Count; i++)
                         {
                             if (i == 30)
@@ -233,14 +257,14 @@ namespace DashboardTables
                                 new ColumnSeries()
                                 {
                                     Title = $"{dt.Columns[0].ColumnName}",
-                                    Values = new ChartValues<double>() { double.Parse(dt.Rows[i].ItemArray[0].ToString()) },
+                                    Values = new ChartValues<double>() { axisX[i] },
                                     DataLabels = true,
                                     Width = 5,
                                     Height = 10
                                 }
                             );
                         }
-
+                        // Adding to panels.
                         var firstPanel = new Panel()
                         {
                             Dock = DockStyle.Right,
@@ -252,13 +276,14 @@ namespace DashboardTables
                             AutoSize = true,
                             AutoSizeMode = AutoSizeMode.GrowOnly
                         };
-
+                        // And Adding all of these to tabpage control
+                        // + connecting events.
                         firstPanel.Controls.Add(pieChart);
                         secondPanel.Controls.Add(secondColumn);
                         pieChart.DataClick += PieChart_DataClick;
                         secondColumn.DataClick += ColumnChart_DataClick;
 
-                        // Добавляем параметры в вкладку.
+                        // Adding parameters.
                         tabPage.Controls.Add(firstPanel);
                         tabPage.Controls.Add(secondPanel);
                     }
@@ -332,13 +357,13 @@ namespace DashboardTables
         }
         private void GetInfo(List<double> axisX, List<double> axisY)
         {
-            avgAxisXLabel.Text = "Average: " + axisX.Average();
+            avgAxisXLabel.Text = "Average: " + (int)axisX.Average();
             avgAxisYLabel.Text = "Average: " + (int)Math.Round(axisY.Average());
             medianAxisYLabel.Text = "MedianAxisXY: " + (int)Math.Round(MedianAxisXy(axisY.ToArray()));
-            medianLabel.Text = "MedianAxisXY: " + MedianAxisXy(axisX.ToArray());
+            medianLabel.Text = "MedianAxisXY: " + (int)MedianAxisXy(axisX.ToArray());
             dispresionAxisYLabel.Text = "Dispresion: " + (int)Math.Round(DispresionAxisXy(axisY));
-            dispresionLabel.Text = "Dispresion: " + DispresionAxisXy(axisX);
-            axisXSa.Text = "SA: " + GAverage(axisX);
+            dispresionLabel.Text = "Dispresion: " + (int)DispresionAxisXy(axisX);
+            axisXSa.Text = "SA: " + (int)GAverage(axisX);
             axisYSa.Text = "SA: " + (int)Math.Round(GAverage(axisY));
         }
 

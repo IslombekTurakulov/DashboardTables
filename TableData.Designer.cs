@@ -64,7 +64,7 @@ namespace DashboardTables
             this.courseDataGrid.Name = "courseDataGrid";
             this.courseDataGrid.ReadOnly = true;
             this.courseDataGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.courseDataGrid.Size = new System.Drawing.Size(875, 565);
+            this.courseDataGrid.Size = new System.Drawing.Size(875, 435);
             this.courseDataGrid.TabIndex = 0;
             // 
             // panel1
@@ -121,7 +121,7 @@ namespace DashboardTables
             this.tablePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tablePanel.Location = new System.Drawing.Point(0, 35);
             this.tablePanel.Name = "tablePanel";
-            this.tablePanel.Size = new System.Drawing.Size(875, 565);
+            this.tablePanel.Size = new System.Drawing.Size(875, 435);
             this.tablePanel.TabIndex = 2;
             // 
             // chooseColumnPanel
@@ -241,9 +241,9 @@ namespace DashboardTables
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(875, 600);
-            this.Controls.Add(this.chooseColumnPanel);
             this.Controls.Add(this.tablePanel);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.chooseColumnPanel);
             this.Name = "TableData";
             this.Text = "StudentsData";
             this.Load += new System.EventHandler(this.StudentsData_Load);
