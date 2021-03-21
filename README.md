@@ -1,5 +1,5 @@
 # Dashboard for HSE
-
+[![Codacy Security Scan](https://github.com/IslombekTurakulov/DashboardTables/actions/workflows/codacy-analysis.yml/badge.svg?branch=master)](https://github.com/IslombekTurakulov/DashboardTables/actions/workflows/codacy-analysis.yml)
 This project was created by using Windows Forms (.NET).
 
 Dashboard Release
