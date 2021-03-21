@@ -202,6 +202,7 @@ namespace DashboardTables
             this.Controls.Add(this.graphTabControl);
             this.Controls.Add(this.topBarSave);
             this.Controls.Add(this.barPanel);
+            this.MinimumSize = new System.Drawing.Size(951, 530);
             this.Name = "Information";
             this.ShowIcon = false;
             this.Text = "Information";

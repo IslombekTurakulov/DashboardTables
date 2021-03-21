@@ -114,7 +114,7 @@ namespace DashboardTables
             {
                 // Checking the existance of file.
                 if (!File.Exists("data.txt"))
-                    throw new ArgumentException("Add graph!");
+                    throw new ArgumentException("There's nothing here. \nAdd graph!");
 
                 var fs = new FileStream("data.txt", FileMode.Open, FileAccess.Read);
                 var sr = new StreamReader(fs, Encoding.UTF8);
@@ -122,9 +122,9 @@ namespace DashboardTables
                 while (sr.Peek() > -1)
                 {
                     // We set the limit of tabpages to reduce the memory capacity.
-                    if (graphTabControl.TabPages.Count >= 10)
+                    if (graphTabControl.TabPages.Count > 10)
                     {
-                        MessageBox.Show("Max tabs is 10!");
+                        MessageBox.Show("Limit of Graphs is 10!");
                         break;
                     }
                     // Creating two list for X and Y coords.
