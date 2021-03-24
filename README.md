@@ -6,7 +6,7 @@ Dashboard Release
 ---------------------
 
 - **Signer:** HSE Notepad project by Peergrade
-- **E-mail:** iturakulov@edu.hse.ru
+- **E-mail:** iuturakulov@edu.hse.ru
 - **Created:** 2021-03-1
 
 
